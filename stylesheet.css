@@ -1,6 +1,7 @@
-.clicked {
-  background-color: red;
-}
 .new-word {
   background-color: gold;
+}
+
+.clicked {
+  background-color: red;
 }

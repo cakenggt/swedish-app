@@ -135,23 +135,27 @@ function getNewPage(){
   $.getScript('https://sv.wikipedia.org/w/api.php?action=query&list=random&format=json&callback=loadPageCallback&rnlimit=1&rnnamespace=0');
 }
 
+function readIt(){
+  $('.word').each(function(){
+    //if it hasn't been clicked, increase the experience
+    if (!$(this).hasClass('clicked')){
+      var word = $(this).text();
+      experienceMap[word] = experienceMap[word] === undefined ? 0.1 : experienceMap[word]+((1-experienceMap[word])/2);
+    }
+  });
+  localStorage.setItem('experienceMap', JSON.stringify(experienceMap));
+  $(this).prop("disabled",true);
+}
+
 $(function(){
   $('#newPage').on('click', function(){
     //reset global variables
     tryMap = {};
     newestId = 0;
+    $('#readIt').prop("disabled",false);
     getNewPage();
   });
-  $('#readIt').on('click', function(){
-    $('.word').each(function(){
-      //if it hasn't been clicked, increase the experience
-      if (!$(this).hasClass('clicked')){
-        var word = $(this).text();
-        experienceMap[word] = experienceMap[word] === undefined ? 0.1 : experienceMap[word]+((1-experienceMap[word])/2);
-      }
-    });
-    localStorage.setItem('experienceMap', JSON.stringify(experienceMap));
-  });
+  $('#readIt').on('click', readIt);
   $(document).on('click', '.word', function(){
     $(this).addClass('clicked');
     window.open('https://translate.google.com/#sv/en/'+$(this).text());
