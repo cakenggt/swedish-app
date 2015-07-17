@@ -5,6 +5,11 @@ var lastClicked = null;
 /*
 Calculates the word experience currently using
 the date, decay rate, and last experience.
+
+The experience of a word is it's last experience value
+multiplied by it's decay rate to the power of the number
+of days it has been since it was last seen.
+
 Returns null if the word doesn't exist in the map
 */
 function getCurrentWordExperience(word) {
@@ -167,7 +172,12 @@ function readIt(){
   $(this).prop("disabled",true);
 }
 
-//Returns new entry
+/*
+Experience is increased by half of it's difference from 1.
+Decay rate is divided by 2
+
+Returns new entry
+*/
 function increaseExperience(entry) {
   var newEntry = {"experience":entry.experience+((1-entry.experience)/2), "decayRate":entry.decayRate/2, "lastPractice":new Date().getTime()};
   return newEntry;
