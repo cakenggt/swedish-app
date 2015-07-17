@@ -216,8 +216,12 @@ $(function(){
   getNewPage();
 });
 
-//This is for getting the json from duolingo, but it doesn't work.
+//These two are for getting the json from duolingo, but it doesn't work.
 //Paste it into the console while on duolingo
+function getVocab() {
+  $.getJSON('https://www.duolingo.com/vocabulary/overview', cleanJSON);
+}
+
 function cleanJSON(data){
   var result = {};
   var wordList = data.vocab_overview;
@@ -226,7 +230,8 @@ function cleanJSON(data){
     var entry = wordList[i];
     result[entry.word_string] = [entry.strength, 0.5, now];
   }
-  return result;
-  //Or return the stringified version
-  //return JSON.stringify(result);
+  var resultString = JSON.stringify(result);
+  resultString = resultString.replace(/(],)/g, '$1\n  ');
+  resultString = 'var experienceMap = '+resultString;
+  console.log(resultString);
 }
