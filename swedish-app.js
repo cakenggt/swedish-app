@@ -154,7 +154,7 @@ function wordClickedCallback(data){
     alert(data[key]);
   }
   else{
-    window.open('https://translate.google.com/#sv/en/'+$(this).text());
+    window.open('https://translate.google.com/#sv/en/'+key);
   }
 }
 
