@@ -2,6 +2,23 @@ var tryMap = {};
 var newestId = 0;
 var lastClicked = null;
 
+/*
+Calculates the word experience currently using
+the date, decay rate, and last experience.
+Returns null if the word doesn't exist in the map
+*/
+function getCurrentWordExperience(word) {
+  var entry = experienceMap[word];
+  if (entry === undefined){
+    return null;
+  }
+  var msPerDay = 86400000;
+  var currentTime = new Date().getTime();
+  var daysSinceLastPractice = (currentTime - entry.lastPractice)/msPerDay;
+  var currentExperience = entry.experience*Math.pow(entry.decayRate, daysSinceLastPractice);
+  return currentExperience;
+}
+
 function getPageText(html) {
   var container = $('#html-container');
   //remove image tags to prevent loading
@@ -41,8 +58,10 @@ function checkPage(originalHtml) {
   var known = 0;
   var words = Object.keys(wordMap);
   for (var k = 0; k < words.length; k++){
-    if (experienceMap[words[k]] && experienceMap[words[k]] > 0.1){
-      known += wordMap[words[k]];
+    if (getCurrentWordExperience(words[k])){
+      if (getCurrentWordExperience(words[k]) > 0.1){
+        known += wordMap[words[k]];
+      }
     }
   }
   var comprehension = known/i;
@@ -96,7 +115,7 @@ function fillDiv(title, html){
   textDiv.find('.word').each(function(){
     var wordSpan = $(this);
     var word = wordSpan.text();
-    var opacity = experienceMap[word];
+    var opacity = getCurrentWordExperience(word);
     if (opacity === undefined){
       wordSpan.addClass('new-word');
     }
@@ -105,8 +124,7 @@ function fillDiv(title, html){
     }
   });
   textDiv.prepend($('<h1>').text(title));
-  $('#newPage').show();
-  $('#readIt').show();
+  $('.buttons').show();
 }
 
 function checkPageCallback(data){
@@ -140,11 +158,19 @@ function readIt(){
     //if it hasn't been clicked, increase the experience
     if (!$(this).hasClass('clicked')){
       var word = $(this).text();
-      experienceMap[word] = experienceMap[word] === undefined ? 0.1 : experienceMap[word]+((1-experienceMap[word])/2);
+      var entry = experienceMap[word];
+      var now = new Date().getTime();
+      experienceMap[word] = entry === undefined ? {"experience":0.1, "decayRate":0.9, "lastPractice":now} : increaseExperience(entry);
     }
   });
   localStorage.setItem('experienceMap', JSON.stringify(experienceMap));
   $(this).prop("disabled",true);
+}
+
+//Returns new entry
+function increaseExperience(entry) {
+  var newEntry = {"experience":entry.experience+((1-entry.experience)/2), "decayRate":entry.decayRate/2, "lastPractice":new Date().getTime()};
+  return newEntry;
 }
 
 function wordClickedCallback(data){
@@ -180,9 +206,10 @@ $(function(){
 function cleanJSON(data){
   var result = {};
   var wordList = data.vocab_overview;
+  var now = new Date().getTime();
   for (var i = 0; i < wordList.length; i++){
     var entry = wordList[i];
-    result[entry.word_string] = entry.strength;
+    result[entry.word_string] = [entry.strength, 0.5, now];
   }
   return result;
   //Or return the stringified version
