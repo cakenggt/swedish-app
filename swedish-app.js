@@ -39,10 +39,7 @@ function getPageText(html) {
   return text.substring(0, text.length -1);
 }
 
-function checkPage(originalHtml) {
-  var text = getPageText(originalHtml);
-  console.log(text);
-  //get rid of all punctuation
+function getComprehension(text) {
   text = text.replace(/[!"#$%&'()*+,\-–./:;<=>?@[\\\]^_`{|}~]/g, ' ');
   var wordList = text.split(/\s+/).filter(Boolean);
   var wordMap = {};
@@ -70,6 +67,14 @@ function checkPage(originalHtml) {
     }
   }
   var comprehension = known/i;
+  return comprehension;
+}
+
+function checkPage(originalHtml) {
+  var text = getPageText(originalHtml);
+  console.log(text);
+  //get rid of all punctuation
+  var comprehension = getComprehension(text);
   console.log('comprehension: ' + comprehension);
   //Display the page for reading
   var pageid = newestId;
