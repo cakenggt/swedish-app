@@ -202,7 +202,12 @@ function wordClickedCallback(data){
       }
     }
   }
-  alert(response.substring(0, response.length-2));
+  if (response){
+    alert(response.substring(0, response.length-2));
+  }
+  else{
+    alert('No definition found');
+  }
   //lastClicked.wrap('<a target="_blank" href=https://translate.google.com/#sv/en/'+key+'>');
 }
 
