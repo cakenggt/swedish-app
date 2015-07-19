@@ -189,13 +189,21 @@ function increaseExperience(entry) {
 }
 
 function wordClickedCallback(data){
-  var key = lastClicked.text();
-  if (data[key].length > 0){
-    alert(data[key]);
+  var response = '';
+  console.log(data);
+  for (var i = 0; i < data.tuc.length; i++){
+    var entry = data.tuc[i];
+    if (entry.phrase){
+      response += data.tuc[i].phrase.text + ', ';
+    }
+    else if (entry.meanings){
+      for (var j = 0; j < entry.meanings.length; j++){
+        response += entry.meanings[j].text + ', ';
+      }
+    }
   }
-  else{
-    lastClicked.wrap('<a target="_blank" href=https://translate.google.com/#sv/en/'+key+'>');
-  }
+  alert(response.substring(0, response.length-2));
+  //lastClicked.wrap('<a target="_blank" href=https://translate.google.com/#sv/en/'+key+'>');
 }
 
 $(function(){
@@ -210,7 +218,7 @@ $(function(){
   $(document).on('click', '.word', function(){
     $(this).addClass('clicked');
     lastClicked = $(this);
-    $.getScript('https://d2.duolingo.com/api/1/dictionary/hints/sv/en?callback=wordClickedCallback&tokens=' + JSON.stringify([$(this).text()]));
+    $.getScript('https://glosbe.com/gapi/translate?from=swe&dest=eng&format=json&callback=wordClickedCallback&pretty=true&phrase=' + $(this).text().toLowerCase());
   });
 
   getNewPage();
