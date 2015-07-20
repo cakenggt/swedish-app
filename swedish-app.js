@@ -14,7 +14,7 @@ Returns null if the word doesn't exist in the map
 */
 function getCurrentWordExperience(word) {
   var entry = experienceMap[word];
-  if (entry === undefined){
+  if (!entry){
     return null;
   }
   var msPerDay = 86400000;
@@ -90,7 +90,7 @@ function checkPage(originalHtml) {
       console.log('No good pages, picking best one');
       var largestId = 0;
       for (var j = 0; j < keys.length; j++){
-        if (largestId === 0 || tryMap[keys[j]] > tryMap[largestId]){
+        if (!largestId || tryMap[keys[j]] > tryMap[largestId]){
           largestId = keys[j];
         }
       }
@@ -126,7 +126,7 @@ function fillDiv(title, html){
     var wordSpan = $(this);
     var word = wordSpan.text();
     var opacity = getCurrentWordExperience(word);
-    if (opacity === null){
+    if (!opacity){
       wordSpan.addClass('new-word');
     }
     else{
@@ -170,7 +170,7 @@ function readIt(){
       var word = $(this).text();
       var entry = experienceMap[word];
       var now = new Date().getTime();
-      experienceMap[word] = entry === undefined ? {"experience":0.1, "decayRate":0.9, "lastPractice":now} : increaseExperience(entry);
+      experienceMap[word] = !entry ? {"experience":0.1, "decayRate":0.9, "lastPractice":now} : increaseExperience(entry);
     }
   });
   localStorage.setItem('experienceMap', JSON.stringify(experienceMap));

@@ -5,8 +5,8 @@
 }
 
 .clicked {
-  background-color: black;
-  border: 2px solid black;
+  background-color: green;
+  border: 2px solid green;
   border-radius: 25px;
 }
 
