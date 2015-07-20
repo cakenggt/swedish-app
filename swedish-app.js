@@ -126,7 +126,7 @@ function fillDiv(title, html){
     var wordSpan = $(this);
     var word = wordSpan.text();
     var opacity = getCurrentWordExperience(word);
-    if (opacity === undefined){
+    if (opacity === null){
       wordSpan.addClass('new-word');
     }
     else{
