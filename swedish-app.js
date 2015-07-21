@@ -61,9 +61,7 @@ function getComprehension(text) {
   var words = Object.keys(wordMap);
   for (var k = 0; k < words.length; k++){
     if (getCurrentWordExperience(words[k])){
-      if (getCurrentWordExperience(words[k]) > 0.1){
-        known += wordMap[words[k]];
-      }
+      known += wordMap[words[k]] * getCurrentWordExperience(words[k]);
     }
   }
   var comprehension = known/i;
@@ -71,6 +69,8 @@ function getComprehension(text) {
 }
 
 function checkPage(originalHtml) {
+  var overlay = $('#overlay');
+  var overlaySpan = $('#overlay span');
   var text = getPageText(originalHtml);
   console.log(text);
   //get rid of all punctuation
@@ -78,28 +78,24 @@ function checkPage(originalHtml) {
   console.log('comprehension: ' + comprehension);
   //Display the page for reading
   var pageid = newestId;
-  if (comprehension > 0.8){
-    //show the page if it has above 80% comprehension
-    displayText(pageid);
+  //find the page with a comprehension closest to 0.8 and display that
+  tryMap[pageid] = comprehension;
+  var keys = Object.keys(tryMap);
+  if (keys.length > 5){
+    overlay.hide();
+    var closestId = 0;
+    for (var j = 0; j < keys.length; j++){
+      if (!closestId || Math.abs(0.8-tryMap[keys[j]]) < Math.abs(0.8-tryMap[closestId])){
+        closestId = keys[j];
+      }
+    }
+    console.log('Best page is: ' + closestId + ' with comprehension of: ' + tryMap[closestId]);
+    displayText(closestId);
   }
   else{
-    //find the page with the highest comprehension and display that
-    tryMap[pageid] = comprehension;
-    var keys = Object.keys(tryMap);
-    if (keys.length > 5){
-      console.log('No good pages, picking best one');
-      var largestId = 0;
-      for (var j = 0; j < keys.length; j++){
-        if (!largestId || tryMap[keys[j]] > tryMap[largestId]){
-          largestId = keys[j];
-        }
-      }
-      console.log('Best page is: ' + largestId + ' with comprehension of: ' + tryMap[largestId]);
-      displayText(largestId);
-    }
-    else{
-      getNewPage();
-    }
+    overlay.show();
+    overlaySpan.text('Fetching page ' + (keys.length) + '/5');
+    getNewPage();
   }
 }
 
