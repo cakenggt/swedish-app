@@ -190,7 +190,6 @@ function increaseExperience(entry) {
 
 function wordClickedCallback(data){
   var response = '';
-  console.log(data);
   for (var i = 0; i < data.tuc.length; i++){
     var entry = data.tuc[i];
     if (entry.phrase){
@@ -203,7 +202,10 @@ function wordClickedCallback(data){
     }
   }
   if (response){
-    alert(response.substring(0, response.length-2));
+    response = response.substring(0, response.length-2);
+    var textElement = $('<div>').html(response);
+    alert(textElement.text());
+    textElement.remove();
   }
   else{
     alert('No definition found');
